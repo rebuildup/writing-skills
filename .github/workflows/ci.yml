@@ -1,12 +1,26 @@
 name: ci
 
+# Skill validation: deterministic structural checks for SKILL.md files.
+# Triggers only when Skills, templates, or the validator script change, so an
+# infrastructure-only PR does not require the validator to run.
+
 on:
   push:
     branches:
       - "**"
+    paths:
+      - "skills/**"
+      - "templates/**"
+      - "scripts/validate-skills.mjs"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches:
       - "**"
+    paths:
+      - "skills/**"
+      - "templates/**"
+      - "scripts/validate-skills.mjs"
+      - ".github/workflows/ci.yml"
 
 permissions:
   contents: read
@@ -15,8 +29,6 @@ jobs:
   skill-validation:
     name: Validate Skills
     runs-on: ubuntu-latest
-    if: |
-      hashFiles('skills/**/*.md', 'templates/**/*.md', 'scripts/validate-skills.mjs') != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,36 +42,3 @@ jobs:
 
       - name: Run Skill validation
         run: node scripts/validate-skills.mjs
-
-  markdown-link-check:
-    name: Markdown link check
-    runs-on: ubuntu-latest
-    if: hashFiles('**/*.md') != ''
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Find broken markdown links (relative)
-        run: |
-          set -euo pipefail
-          fail=0
-          while IFS= read -r -d '' md; do
-            # Grep relative markdown links. Skip http(s):// and pure anchors.
-            matches=$(grep -oE '\]\(([^)]+)\)' "$md" || true)
-            for link in $matches; do
-              target=$(echo "$link" | sed -E 's/^\]\((.*)\)$/\1/' | sed 's/#.*//')
-              case "$target" in
-                ""|"#"*|"http://"*|"https://"*|"mailto:"*) continue ;;
-              esac
-              abs="$(dirname "$md")/$target"
-              if [ ! -e "$abs" ]; then
-                echo "::error file=$md::broken link: $target"
-                fail=1
-              fi
-            done
-          < <(find . -type f -name '*.md' -not -path './.git/*' -print0)
-          if [ "$fail" -ne 0 ]; then
-            echo "Markdown link check failed"
-            exit 1
-          fi
-          echo "Markdown link check passed"

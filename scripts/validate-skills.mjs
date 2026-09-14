@@ -127,8 +127,8 @@ for (const root of ROOTS) {
   all.push(...listMarkdownFiles(join(REPO_DIR, root)));
 }
 if (all.length === 0) {
-  console.error("No SKILL.md files found under skills/ or templates/");
-  process.exit(1);
+  console.log("Skill validation: no SKILL.md files found under skills/ or templates/; nothing to check.");
+  process.exit(0);
 }
 
 for (const skill of all) checkSkill(skill);

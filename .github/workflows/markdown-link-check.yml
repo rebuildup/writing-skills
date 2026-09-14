@@ -1,0 +1,56 @@
+name: markdown-link-check
+
+# Markdown link integrity check: any change to a markdown file in the
+# repository triggers a full sweep. Pre-merge this is best-effort: a PR that
+# introduces docs referencing Skills that land in the same sprint will see
+# transient failures; the merged state is re-validated when the release
+# branch is pushed.
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "**/*.md"
+      - ".github/workflows/markdown-link-check.yml"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "**/*.md"
+      - ".github/workflows/markdown-link-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-link-check:
+    name: Markdown link check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find broken markdown links (relative)
+        run: |
+          set -euo pipefail
+          fail=0
+          while IFS= read -r -d '' md; do
+            matches=$(grep -oE '\]\(([^)]+)\)' "$md" || true)
+            for link in $matches; do
+              target=$(echo "$link" | sed -E 's/^\]\((.*)\)$/\1/' | sed 's/#.*//')
+              case "$target" in
+                ""|"#"*|"http://"*|"https://"*|"mailto:"*) continue ;;
+              esac
+              abs="$(dirname "$md")/$target"
+              if [ ! -e "$abs" ]; then
+                echo "::error file=$md::broken link: $target"
+                fail=1
+              fi
+            done
+          done < <(find . -type f -name '*.md' -not -path './.git/*' -print0)
+          if [ "$fail" -ne 0 ]; then
+            echo "Markdown link check failed"
+            exit 1
+          fi
+          echo "Markdown link check passed"
