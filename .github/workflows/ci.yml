@@ -1,0 +1,44 @@
+name: ci
+
+# Skill validation: deterministic structural checks for SKILL.md files.
+# Triggers only when Skills, templates, or the validator script change, so an
+# infrastructure-only PR does not require the validator to run.
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "skills/**"
+      - "templates/**"
+      - "scripts/validate-skills.mjs"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "skills/**"
+      - "templates/**"
+      - "scripts/validate-skills.mjs"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  skill-validation:
+    name: Validate Skills
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Skill validation
+        run: node scripts/validate-skills.mjs

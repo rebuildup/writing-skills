@@ -1,0 +1,26 @@
+# CODEOWNERS
+# Required reviewers for changes. Branch protection on `main` and the
+# `main-protection` ruleset currently require 1 approving review; this file
+# lets GitHub auto-request the right human when CODEOWNERS review is enabled.
+#
+# Format: <pattern> <owner1> <owner2> ...
+# Last match wins, so order from broad to specific.
+
+# Default owner for everything in this repository.
+/                                   @rebuildup
+
+# Skill files: any change that adds, removes, or edits a Skill must be
+# reviewed by the writing-skills maintainer.
+/skills/                             @rebuildup
+/templates/                          @rebuildup
+
+# Repository workflow, infrastructure, and protection changes require
+# maintainer review.
+/.github/                            @rebuildup
+/docs/                               @rebuildup
+
+# Root agent contract and delivery-model documentation.
+/AGENTS.md                           @rebuildup
+/README.md                           @rebuildup
+/CONTRIBUTING.md                     @rebuildup
+/LICENSE                             @rebuildup
