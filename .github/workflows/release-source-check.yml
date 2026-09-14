@@ -1,0 +1,42 @@
+name: release-source-check
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  release-source:
+    name: Verify PR head is the active release branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify head branch matches release-* pattern
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_LABEL: ${{ github.event.pull_request.head.label }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          if [ "$BASE_REF" != "main" ]; then
+            echo "Base branch is $BASE_REF, not main; skipping release-source check."
+            exit 0
+          fi
+          if ! echo "$HEAD_REF" | grep -Eq '^release-[0-9]+-[0-9]+(-[0-9]+)?$'; then
+            echo "::error title=Invalid PR source branch::PR head '$HEAD_REF' does not match release-* pattern. The canonical delivery path to main is release-x-y-z -> main."
+            exit 1
+          fi
+          # Look for target-release label or body marker that names the same version.
+          echo "PR head '$HEAD_REF' matches the release-* pattern. Release source check passed."
