@@ -33,6 +33,12 @@ reader-facing prose 全般に適用する foundation skill です。
 2. **Compose** — 選んだ内容を reader の理解順に standalone prose へ再構成する
 3. **Reread** — 元の task や conversation を知らない reader として全文を読み直し、構造・接続・冗長・referent・context dependence を編集する
 
+### natural-japanese
+
+日本語 prose の自然さ・読みやすさ・AI的な定型・翻訳調を扱う specialized skill です。生成前の制約、deterministic lint、構造・読解負荷レビュー、診断・推敲ループを `writing-discipline` の上に追加します。
+
+[coji/natural-japanese](https://github.com/coji/natural-japanese) を upstream とし、runtime surface を MIT attribution 付きで取り込んでいます。
+
 ## Installation
 
 利用可能な Skill を確認:
@@ -49,6 +55,11 @@ npx skills add rebuildup/writing-skills --list
 bunx skills add rebuildup/writing-skills --skill writing-discipline
 # or
 npx skills add rebuildup/writing-skills --skill writing-discipline
+
+# 日本語 prose の自然さ・読みやすさ・AI臭診断も使う場合
+bunx skills add rebuildup/writing-skills --skill natural-japanese
+# or
+npx skills add rebuildup/writing-skills --skill natural-japanese
 ```
 
 ## Repository structure
@@ -60,8 +71,13 @@ npx skills add rebuildup/writing-skills --skill writing-discipline
 ├─ CONTRIBUTING.md
 ├─ LICENSE
 └─ skills/
-   └─ writing-discipline/
-      └─ SKILL.md
+   ├─ writing-discipline/
+   │  └─ SKILL.md
+   └─ natural-japanese/
+      ├─ SKILL.md
+      ├─ references/
+      ├─ scripts/
+      └─ assets/
 ```
 
 将来の specialized skill は、foundation の原則を置き換えるのではなく progressive disclosure で追加します。候補には clarity、conciseness、information structure、technical writing、documentation、ADR、Issue、Pull Request、review writing などがあります。
