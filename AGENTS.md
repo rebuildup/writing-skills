@@ -40,3 +40,18 @@ Prefer deletion, reordering, and rewriting over appending explanations to a stru
 ## Temporary material
 
 Use `.tmp/` for transient investigation / verification output and `.reference/` for temporary external reference repositories. Neither is canonical project state.
+
+
+## Constitution / operating profile
+
+- [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md)
+- [`organization/profiles/release-driven-solo.md`](organization/profiles/release-driven-solo.md)
+
+
+## Agent Skills lifecycle
+
+- install/reconcile: `bunx skills add rebuildup/project-init --skill '*' --agent claude-code opencode codex -y`
+- fresh clone: `bunx skills install`
+- continuous update: `bunx skills update -p -y`
+- global install is not canonical; commit CLI-generated `skills-lock.json`
+- do not hand-edit upstream-managed project-init Skills
