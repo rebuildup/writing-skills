@@ -42,3 +42,15 @@ jobs:
 
       - name: Run Skill validation
         run: node scripts/validate-skills.mjs
+
+      - name: Install uv
+        if: ${{ hashFiles('skills/natural-japanese/scripts/lint.py') != '' }}
+        run: python -m pip install uv
+
+      - name: Smoke-test natural-japanese deterministic tools
+        if: ${{ hashFiles('skills/natural-japanese/scripts/lint.py') != '' }}
+        run: |
+          uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/ai-smelly.md --json > /tmp/natural-japanese-ai.json
+          uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/natural.md --json > /tmp/natural-japanese-natural.json
+          uv run skills/natural-japanese/scripts/outline.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-outline.txt
+          uv run skills/natural-japanese/scripts/terms.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-terms.txt
