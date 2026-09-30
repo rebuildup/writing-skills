@@ -77,8 +77,10 @@ upstream 由来と差分は [UPSTREAM.md](./UPSTREAM.md) を参照する。
 
 ## 3. 検査(1) — 静的検知
 
+以下のコマンドでは `SKILL_DIR` を、現在ロードしているこの `SKILL.md` が置かれているディレクトリの絶対パスとして解決してから使う。Skill を別プロジェクトへインストールした場合も、スクリプトは作業ディレクトリではなく `SKILL_DIR` を基準にする。対象文書の `<file>` はユーザーの作業ディレクトリ基準のままでよい。
+
 ```
-uv run skills/natural-japanese/scripts/lint.py --json <file>
+uv run "$SKILL_DIR/scripts/lint.py" --json <file>
 ```
 
 禁止語・翻訳調・否定肯定対比の反復・文長の均質さ・体言止め率・段落頭の接続詞率・語彙多様性・英語統語の疑いなどを機械的に検出する。検出結果は件数に関わらず exit code 0（lint なので、件数で CI を止めることはしない）。入力エラーのときだけ exit code 1。
@@ -87,17 +89,17 @@ uv run skills/natural-japanese/scripts/lint.py --json <file>
 
 収束ループ（4〜5）では、直前の `--json` 出力を `--baseline` に渡すと resolved / new / persisting を自動で仕分けてくれる。`uv` が使えない環境（Claude.ai 等）では `references/manual-checklist.md` で同じ観点を人手でなぞる。
 
-もう一つ、`scripts/semantic.py` という EXPERIMENTAL な意味的検出器がある。文埋め込みで隣接文の類似度の起伏（話題の平板さ）を測るもので、torch + sentence-transformers 依存・初回~1GBのモデルダウンロードを伴う重量級のため lint.py 本体には組み込まず、独立した opt-in エントリにしている。フル工程や環境が許すときだけ `uv run skills/natural-japanese/scripts/semantic.py --json <file>` を追加で回し、findings は lint と同じく判断台帳に載せて扱う。
+もう一つ、`scripts/semantic.py` という EXPERIMENTAL な意味的検出器がある。文埋め込みで隣接文の類似度の起伏（話題の平板さ）を測るもので、torch + sentence-transformers 依存・初回~1GBのモデルダウンロードを伴う重量級のため lint.py 本体には組み込まず、独立した opt-in エントリにしている。フル工程や環境が許すときだけ `uv run "$SKILL_DIR/scripts/semantic.py" --json <file>` を追加で回し、findings は lint と同じく判断台帳に載せて扱う。
 
 ## 4. 検査(2) — 判断台帳と二つのレビュー
 
 lint の findings は疑いの提示であり、機械的に全部直せという指示ではない。今回ヒットしたカテゴリの節を `references/revision-guide.md` で読み直し、文脈に照らして「直す/直さない」を判断する。判断は finding 一つひとつに「直した」か「残す（理由）」かを書き残しながら進める（台帳の形式は同ファイルの「判断台帳」を参照）。
 
-用語カタログが必要なら: 禁止語 → `references/forbidden-patterns.md`、翻訳調 → `references/translationese.md`。専門用語が初出で説明されているか確認する材料には `uv run skills/natural-japanese/scripts/terms.py <file>` を使う。カタカナ複合語・ASCII略語・固有名詞らしき語を初出行・出現回数・説明マーカーの有無つきで列挙する（説明済みかどうかは機械が判断せず、AI/人間が行う）。
+用語カタログが必要なら: 禁止語 → `references/forbidden-patterns.md`、翻訳調 → `references/translationese.md`。専門用語が初出で説明されているか確認する材料には `uv run "$SKILL_DIR/scripts/terms.py" <file>` を使う。カタカナ複合語・ASCII略語・固有名詞らしき語を初出行・出現回数・説明マーカーの有無つきで列挙する（説明済みかどうかは機械が判断せず、AI/人間が行う）。
 
 ### 構造レビュー — スケルトン通読
 
-lint は文レベルの表層しか見えない。特に箇条書き主体の議事録・スライドでは lint がほぼ素通りするため、構造レビューが主役になる。完成した本文から見出しと各段落の先頭文だけを抜き出して読み、次を確かめる（`uv run skills/natural-japanese/scripts/outline.py <file>` で見出し・各段落の先頭文・箇条書きプレースホルダを行番号付きで機械抽出できる）:
+lint は文レベルの表層しか見えない。特に箇条書き主体の議事録・スライドでは lint がほぼ素通りするため、構造レビューが主役になる。完成した本文から見出しと各段落の先頭文だけを抜き出して読み、次を確かめる（`uv run "$SKILL_DIR/scripts/outline.py" <file>` で見出し・各段落の先頭文・箇条書きプレースホルダを行番号付きで機械抽出できる）:
 
 1. 論旨が通るか（スケルトンだけで話が追えるか）
 2. 各見出しがメッセージになっているか
@@ -110,7 +112,7 @@ lint は文レベルの表層しか見えない。特に箇条書き主体の議
 
 ### 読みやすさレビュー
 
-読解負荷の高い箇所は `uv run skills/natural-japanese/scripts/lint.py --reading-load <ファイル>` で指さしを出せる（一文長・埋もれた列挙・連続漢字・二重否定・「の」連鎖）。**これは AI臭さの検出とは別目的の推敲用レーンで、自然度スコアにも `--baseline` 比較にも入らない**。出力は「この文を見ろ」であって「直せ」ではない。指摘は起点として扱い、どう直すかは下記カタログの該当項目で判断する。
+読解負荷の高い箇所は `uv run "$SKILL_DIR/scripts/lint.py" --reading-load <ファイル>` で指さしを出せる（一文長・埋もれた列挙・連続漢字・二重否定・「の」連鎖）。**これは AI臭さの検出とは別目的の推敲用レーンで、自然度スコアにも `--baseline` 比較にも入らない**。出力は「この文を見ろ」であって「直せ」ではない。指摘は起点として扱い、どう直すかは下記カタログの該当項目で判断する。
 
 語順、読点の位置、一文一義、主語述語の距離、こそあど言葉の多用、冗長表現は、機械的な閾値化ができないと実証済みの判断領域。`references/readability-principles.md`（一般原則）と `references/readability-antipatterns.md`（悪文パターン27種を読解負荷順に A→J で分類したカタログ）を参照しながら毎周回、目視で判断する。**カタログは前から当てる**——A（否定の入れ子）・B（係り受けの距離）・C（語と語形の重さ）が一文の中で読者に計算を強いる高負荷層で、H・I・J は文書・表記・読者の知識にまたがる層。短さは目的関数にせず、事実保持と主述・係り受けを確認した後の同等候補間でだけタイブレーカーに使う。文の分割や列挙の展開で字数が増えるのは正しい結果であり、不合格の理由にしない。
 

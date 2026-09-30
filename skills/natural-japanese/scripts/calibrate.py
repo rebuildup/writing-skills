@@ -223,11 +223,14 @@ def run_full_lint(mod, prepared: PreparedDoc) -> None:
     low_spec_findings, low_spec_stats = mod.detect_low_specificity(prepared.lines, prepared.raw_lines_by_no)
     findings += low_spec_findings
 
-    # 構造層検出器（2026-07新設）はマスク前の raw テキストに対して働く。
+    # 構造層検出器（2026-07新設）は Markdown 構造を残した raw テキストに対して働くが、
+    # run_lint() と同じく HTML コメントは検出対象から外す。
     # calibrate.py は run_lint() の EXPERIMENTAL_CATEGORIES フィルタを経由しない
     # （個別の detect_* を直接呼ぶ設計）ため、実験的カテゴリの生の発火率もそのまま
     # report/length-analysis に出る。これは意図的（校正のためにこそ実データが要る）。
-    structural_findings, structural_stats = mod.detect_structural_ai_habits(prepared.doc.text)
+    structural_findings, structural_stats = mod.detect_structural_ai_habits(
+        mod.mask_html_comments(prepared.doc.text)
+    )
     findings += structural_findings
 
     prepared.findings = findings
@@ -541,21 +544,12 @@ def cmd_sweep(mod, detector_name: str) -> None:
     for value in spec.values:
         human_fp = 0
         for p in human_prepared:
-            try:
-                if spec.run(p, value):
-                    human_fp += 1
-            except Exception:
-                # 統計系検出器は最低サンプル数未満だと空リストを返すだけで例外は
-                # 起きない設計だが、想定外の入力（極端な閾値等）でも1文書の
-                # 失敗でスイープ全体を落とさないよう保険を掛けておく。
-                pass
+            if spec.run(p, value):
+                human_fp += 1
         ai_hit = 0
         for p in ai_prepared:
-            try:
-                if spec.run(p, value):
-                    ai_hit += 1
-            except Exception:
-                pass
+            if spec.run(p, value):
+                ai_hit += 1
         human_fp_rate = human_fp / len(human_prepared) if human_prepared else None
         ai_detect_rate = ai_hit / len(ai_prepared) if ai_prepared else None
         curve.append(
