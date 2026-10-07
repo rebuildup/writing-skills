@@ -22,11 +22,10 @@ Selected semantic-fidelity and rewrite-diff behavior is adapted from [nanaism/yo
 - Original copyright: Copyright (c) 2026 nanaism
 - Adapted normative scope: `references/semantic-fidelity.md`
 - Adapted runtime scope: `scripts/fidelity_diff.py`
-- Vendored runtime helper: `scripts/markdown_visibility.py`
 
 The full yomiyasu MIT notice is preserved in [LICENSE.yomiyasu](./LICENSE.yomiyasu).
 
-The `fidelity_diff.py` filename and user-facing description are adapted to this repository's generic semantic-fidelity terminology. The upstream diff behavior remains advisory: it surfaces changes that need review but does not decide whether meaning changed.
+The `fidelity_diff.py` implementation is a narrowed adaptation of upstream `yomiyasu_diff.py`: it keeps lexical, modality, sentence-ending, connective, and structural drift signals while intentionally dropping unrelated Markdown emphasis repair and other formatting checks. The behavior remains advisory: it surfaces changes that need review but does not decide whether meaning changed.
 
 The upstream `yomiyasu_lint.py`, corpus/eval infrastructure, domain packs, slop catalog, plugin packaging, and research artifacts are intentionally not vendored. Their responsibilities either overlap with the existing `natural-japanese` lint/references or are outside this runtime surface.
 
