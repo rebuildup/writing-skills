@@ -13,7 +13,7 @@ argument-hint: "[write|score] [quick|full|exp] [対象ファイルや依頼内�
 
 この Skill は `writing-discipline` の foundation を前提に、日本語固有の自然さ・読みやすさ・AI的パターン検出を追加する specialized skill である。audience / purpose / source fidelity / reader order など foundation と競合する判断では `writing-discipline` を優先し、本 Skill は日本語表現と診断・推敲の追加レイヤーとして使う。
 
-upstream 由来と差分は [UPSTREAM.md](./UPSTREAM.md) を参照する。
+upstream 由来と差分は [UPSTREAM.md](./UPSTREAM.md) を参照する。既存文のリライトでは、表現上の改善より元文の意味保持を優先し、[references/semantic-fidelity.md](./references/semantic-fidelity.md) の pre/post fidelity pass を追加する。
 
 ## 設計思想
 
@@ -75,6 +75,29 @@ upstream 由来と差分は [UPSTREAM.md](./UPSTREAM.md) を参照する。
 
 この段階では禁止語やリズムを気にしすぎず、憲法の範囲で内容を出し切ってよい。細部は次の検査工程が拾う。
 
+## 2.5 既存文のリライト — semantic fidelity
+
+元文がある推敲・リライトでは、自然さを改善する前に元文の意味を固定し、書き直した後に前後比較する。詳細は `references/semantic-fidelity.md` を参照する。
+
+最低限、元文について次の4軸を把握する。
+
+1. **主張** — 何を述べているか
+2. **比重** — 何を重く扱い、何を補足・対比・例外として扱っているか
+3. **certainty** — 断定 / 推量 / 可能性 / 条件付き判断の強さ
+4. **communicative function** — 説明 / 評価 / 依頼 / 助言 / 予定 / 報告など、文が何をしているか
+
+書き直し後も4軸を同じに保つ。原文や提供済み文脈から確定できない主体・原因・条件・数値・時点・感情・比較対象・変更履歴を、自然に見せるためだけに補ってはいけない。
+
+元文と書き直し後をファイルとして比較できる場合は、次を実行する。
+
+```bash
+python "$SKILL_DIR/scripts/fidelity_diff.py" <original> <rewrite> --json
+```
+
+この tool は意味変更を判定しない。新規語・消失語、依頼 / 義務 / 評価 / 推量 / 条件などの marker 変化、文末種別、箇条書き・段落・文数などの構造変化を「見直し候補」として列挙する。finding は自動修正せず、元文と4軸に照らして「修正する / 残す」を判断台帳へ統合する。
+
+自然さと fidelity が衝突した場合は、意味保持を優先する。
+
 ## 3. 検査(1) — 静的検知
 
 以下のコマンドでは `SKILL_DIR` を、現在ロードしているこの `SKILL.md` が置かれているディレクトリの絶対パスとして解決してから使う。Skill を別プロジェクトへインストールした場合も、スクリプトは作業ディレクトリではなく `SKILL_DIR` を基準にする。対象文書の `<file>` はユーザーの作業ディレクトリ基準のままでよい。
@@ -122,7 +145,7 @@ lint は文レベルの表層しか見えない。特に箇条書き主体の議
 
 ## 5. 収束
 
-台帳の「直した」項目を反映したら lint を再実行し、新しい finding が出ていないか確認する。台帳上の全 finding が仕分けられ、修正が新たな finding を生んでいない状態になるまで 3〜4 を繰り返す。同じ finding が2周連続で再発する場合は `references/revision-guide.md` の「発散ガード」を参照。
+台帳の「直した」項目を反映したら lint を再実行し、新しい finding が出ていないか確認する。既存文のリライトでは、元文に対して `fidelity_diff.py` も再実行し、修正によって新しい語・モダリティ・文末・構造の変化が生じていないか確認する。台帳上の全 finding が仕分けられ、修正が新たな finding を生んでいない状態になるまで 3〜4 を繰り返す。同じ finding が2周連続で再発する場合は `references/revision-guide.md` の「発散ガード」を参照。
 
 既存文書のリライトでは、同じ種類の修正（見出しの結論化、箇条書きの地の文化など）を全項目へ一律に当てると、元の文書の自然な濃淡を消してかえってAI臭が増す。価値を足せる箇所だけを選んで直す原則は `references/revision-guide.md` の「改稿を一律に適用しない」を参照。
 
