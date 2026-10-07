@@ -54,3 +54,17 @@ jobs:
           uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/natural.md --json > /tmp/natural-japanese-natural.json
           uv run skills/natural-japanese/scripts/outline.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-outline.txt
           uv run skills/natural-japanese/scripts/terms.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-terms.txt
+          python skills/natural-japanese/scripts/fidelity_diff.py \
+            skills/natural-japanese/scripts/fixtures/fidelity-original.md \
+            skills/natural-japanese/scripts/fixtures/fidelity-drift.md \
+            --json > /tmp/natural-japanese-fidelity.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("/tmp/natural-japanese-fidelity.json").read_text())
+          assert data["new_words"], "expected added-word candidates"
+          assert data["lost_words"], "expected removed-word candidates"
+          assert data["markers"], "expected modality/marker changes"
+          assert data["structure"], "expected structure changes"
+          assert data["endings"]["changes"], "expected ending-kind changes"
+          PY
