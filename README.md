@@ -16,6 +16,8 @@ AI agent が文章を作成・編集・レビューするときの判断能力�
 
 reader-facing prose 全般に適用する foundation skill です。
 
+`writing-discipline` の正本はこの repository です。[project-init](https://github.com/rebuildup/project-init) を含む他の repository は複製を持たず、ここから導入します。
+
 主な対象:
 
 - README / development guide / architecture docs
@@ -70,6 +72,8 @@ npx skills add rebuildup/writing-skills --skill natural-japanese
 ├─ README.md
 ├─ CONTRIBUTING.md
 ├─ LICENSE
+├─ evals/
+│  └─ writing-discipline/   # grader と positive / negative / regression fixtures
 └─ skills/
    ├─ writing-discipline/
    │  └─ SKILL.md

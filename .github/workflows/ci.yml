@@ -12,6 +12,7 @@ on:
       - "skills/**"
       - "templates/**"
       - "scripts/validate-skills.mjs"
+      - "evals/**"
       - ".github/workflows/ci.yml"
   pull_request:
     branches:
@@ -20,6 +21,7 @@ on:
       - "skills/**"
       - "templates/**"
       - "scripts/validate-skills.mjs"
+      - "evals/**"
       - ".github/workflows/ci.yml"
 
 permissions:
@@ -42,6 +44,9 @@ jobs:
 
       - name: Run Skill validation
         run: node scripts/validate-skills.mjs
+
+      - name: Run writing-discipline grader controls
+        run: bash evals/writing-discipline/controls.sh
 
       - name: Install uv
         if: ${{ hashFiles('skills/natural-japanese/scripts/lint.py') != '' }}
