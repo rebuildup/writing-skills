@@ -159,6 +159,26 @@ TRANSLATIONESE_PATTERNS: list[str] = [
     r"に他ならない",
 ]
 
+# 比喩動詞と非生物主語の典型（nanaism/yomiyasu の METAPHOR_VERB_PATTERNS から採用、MIT）。
+# 「〜した瞬間」は文脈を問わず広く当たるため採用していない。
+METAPHOR_VERB_PATTERNS: list[tuple[str, str]] = [
+    (r"(地味に|よく|じわじわ)効[かきくけいた]", "比喩動詞「効く」の過剰使用"),
+    (r"(データ|仕様|設計|環境|ビルド|システム|秩序)が(静かに)?壊れ", "比喩動詞「壊れる」"),
+    (r"静かに(壊れ|落ち|失敗|沈黙)", "英語直訳「静かに壊れる (silently fail)」"),
+    (r"黙って(無視|捨て|スキップ|破棄)", "英語直訳「黙って無視される」"),
+    (r"側に倒[すしせ]", "判断を方向で表現する「〜側に倒す」"),
+    (r"時間[をに]溶か[さしすせそ]", "比喩動詞「時間を溶かす」"),
+    (r"(1つずつ|一つずつ)潰[していく]", "比喩動詞「潰す」"),
+    (r"(実装|詳細|コード|設計|内部|仕組み|領域|本質)(に|まで|へ)踏み込[んむみま]", "比喩動詞「踏み込む」"),
+    (r"動かしながら引き返[すし]", "比喩動詞「引き返す」"),
+    (r"代わりに添え[るた]", "比喩動詞「添える」"),
+    (r"(議論|意見|結論|方向性|価格|話題|検討)が[^。！？!?]*?収斂", "比喩動詞「収斂する」"),
+    (r"(前提|基盤)が崩れ[るた]", "抽象比喩「前提が崩れる」"),
+    (r"文化が醸成", "非生物主語「文化が醸成される」"),
+    (r"プロセスが定着", "非生物主語「プロセスが定着する」"),
+    (r"事例が残した", "非生物主語「事例が残した」"),
+]
+
 # 段落頭に来ると「AI が構成を接続詞で誤魔化しがち」な語
 PARAGRAPH_CONJUNCTIONS: list[str] = [
     "しかし",
@@ -613,6 +633,32 @@ def detect_forbidden_phrases(
                         excerpt=excerpt.strip(),
                         severity=severity,
                         detail=detail,
+                    )
+                )
+    return findings
+
+
+def detect_metaphor_verbs(
+    lines: list[tuple[int, str]], raw_lines_by_no: dict[int, str] | None = None
+) -> list[Finding]:
+    """比喩動詞と非生物主語の典型を検出する。構造的な推敲の見直し候補であり、
+    含みや慣用句として残すかは references/structural-reconstruction.md の条件で判断する。
+    """
+    findings = []
+    for no, line in lines:
+        raw_line = _raw_or_masked(raw_lines_by_no, no, line)
+        for pat, desc in METAPHOR_VERB_PATTERNS:
+            for m in re.finditer(pat, line):
+                start = max(0, m.start() - 10)
+                end = m.end() + 10
+                excerpt = raw_line[start:end] if len(raw_line) >= end else line[start:end]
+                findings.append(
+                    Finding(
+                        line=no,
+                        category="metaphor_verb",
+                        excerpt=excerpt.strip(),
+                        severity="warn",
+                        detail=f"{desc}。行為者と事実に戻して組み直せるか確認する",
                     )
                 )
     return findings
@@ -2132,6 +2178,7 @@ def run_lint(
     # --- 表層（正規表現）ベースの検出器 ---
     findings += detect_forbidden_phrases(lines, raw_lines_by_no)
     findings += detect_translationese(lines, raw_lines_by_no)
+    findings += detect_metaphor_verbs(lines, raw_lines_by_no)
     findings += detect_antithesis_repetition(
         lines,
         raw_lines_by_no,

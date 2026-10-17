@@ -54,6 +54,16 @@ jobs:
           uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/natural.md --json > /tmp/natural-japanese-natural.json
           uv run skills/natural-japanese/scripts/outline.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-outline.txt
           uv run skills/natural-japanese/scripts/terms.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-terms.txt
+          uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/metaphor-verbs.md --json > /tmp/natural-japanese-metaphor.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          def count(path):
+              data = json.loads(Path(path).read_text())
+              return sum(1 for f in data.get("findings", []) if f.get("category") == "metaphor_verb")
+          assert count("/tmp/natural-japanese-metaphor.json") >= 3, "expected metaphor_verb findings"
+          assert count("/tmp/natural-japanese-natural.json") == 0, "metaphor_verb fired on the natural fixture"
+          PY
           python skills/natural-japanese/scripts/fidelity_diff.py \
             skills/natural-japanese/scripts/fixtures/fidelity-original.md \
             skills/natural-japanese/scripts/fixtures/fidelity-drift.md \
