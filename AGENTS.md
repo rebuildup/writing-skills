@@ -10,7 +10,7 @@ Keep the root contract concise. Detailed writing behavior belongs in `skills/` a
 
 - For persistent or reader-facing prose, use `skills/writing-discipline/SKILL.md`.
 - Treat conversation, investigation, execution history, and raw tool output as working context, not as prose to serialize.
-- Preserve the meaning of an existing Skill when moving, splitting, or refining it. Do not silently drop normative rules.
+- For Skill changes, use `skills/skill-authoring/SKILL.md`; replace or remove redundant guidance while preserving normative behavior.
 - Specialized Skills may refine a writing task, but must not weaken repository-wide foundation rules without an explicit decision.
 
 ## Repository workflow
