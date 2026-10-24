@@ -67,4 +67,11 @@ jobs:
           assert data["markers"], "expected modality/marker changes"
           assert data["structure"], "expected structure changes"
           assert data["endings"]["changes"], "expected ending-kind changes"
+          import runpy
+          compare = runpy.run_path("skills/natural-japanese/scripts/fidelity_diff.py")["diff"]
+          assert compare("API v1 を維持します。", "API v1 を維持しません。")["negation"]
+          assert compare("API v1 を維持しません。", "API v1 を維持します。")["negation"]
+          assert compare("API v1 を維持します。", "API v1 を維持します。")["negation"] == []
+          assert compare("機能を使わない。", "機能を使う。")["negation"]
+          assert compare("今日は実行せずに終わる。", "今日は実行して終わる。")["negation"]
           PY
