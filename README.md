@@ -16,6 +16,8 @@ AI agent が文章を作成・編集・レビューするときの判断能力�
 
 reader-facing prose 全般に適用する foundation skill です。
 
+`writing-discipline` の正本はこの repository です。[project-init](https://github.com/rebuildup/project-init) を含む他の repository は複製を持たず、ここから導入します。
+
 主な対象:
 
 - README / development guide / architecture docs
@@ -37,7 +39,7 @@ reader-facing prose 全般に適用する foundation skill です。
 
 日本語 prose の自然さ・読みやすさ・AI的な定型・翻訳調を扱う specialized skill です。生成前の制約、deterministic lint、構造・読解負荷レビュー、診断・推敲ループを `writing-discipline` の上に追加します。
 
-[coji/natural-japanese](https://github.com/coji/natural-japanese) を upstream とし、runtime surface を MIT attribution 付きで取り込んでいます。
+[coji/natural-japanese](https://github.com/coji/natural-japanese) を primary upstream とし、[nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) から既存文リライトの意味保持・前後比較を MIT attribution 付きで取り込んでいます。
 
 ## Installation
 
@@ -70,6 +72,8 @@ npx skills add rebuildup/writing-skills --skill natural-japanese
 ├─ README.md
 ├─ CONTRIBUTING.md
 ├─ LICENSE
+├─ evals/
+│  └─ writing-discipline/   # grader と positive / negative / regression fixtures
 └─ skills/
    ├─ writing-discipline/
    │  └─ SKILL.md

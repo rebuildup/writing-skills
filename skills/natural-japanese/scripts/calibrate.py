@@ -250,6 +250,7 @@ def run_full_lint(mod, prepared: PreparedDoc) -> None:
 ALL_CATEGORIES = [
     "forbidden_phrase",
     "translationese",
+    "metaphor_verb",
     "translationese_morph",
     "antithesis_repetition",
     "low_sentence_variance",
