@@ -81,7 +81,7 @@ AI的な比喩や擬人化は、具体的な動作へ言い換えられる場合
 
 ## 6. deterministic diff を使う
 
-既存文をリライトした場合、可能なら前後比較を実行する。
+既存文をリライトした場合、可能なら前後比較を実行する。`SKILL_DIR` は、この Skill の `SKILL.md` が置かれたディレクトリの絶対パスとして解決する。
 
 ```bash
 python "$SKILL_DIR/scripts/fidelity_diff.py" <original> <rewrite> --json
@@ -89,6 +89,7 @@ python "$SKILL_DIR/scripts/fidelity_diff.py" <original> <rewrite> --json
 
 この tool は意味変更を判定しない。次のような「意味が動きやすい変更候補」を deterministic に列挙する。
 
+- 明示的な否定表現の増減（文ごとの見直し候補）
 - 依頼 / 義務 / 評価 / 推量 / 条件などの marker 数の変化
 - 元文にない語
 - 消えた語

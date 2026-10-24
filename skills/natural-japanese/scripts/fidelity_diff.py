@@ -39,6 +39,9 @@ HEADING_RE = re.compile(r"(?m)^\s*#{1,6}\s+")
 LIST_PREFIX_RE = re.compile(r"(?m)^\s*(?:[*+-]|・|\d+[.)])\s+")
 SENTENCE_SPLIT_RE = re.compile(r"(?<=[。！？!?])|\n+")
 
+# Advisory-only detector for changes in explicit negative expressions.
+NEGATION_RE = re.compile(r"ません(?:でした)?|な(?:い|かった|く)(?![ぁ-ん])|ず(?=に|[、。！？!?\s]|$)")
+
 LOGIC_PATTERNS = [
     ("文頭のつなぎ", re.compile(r"^(?:ただし|しかし|一方|また|さらに|つまり|そのため|したがって|だから|それでも|なお|そこで|ところが)")),
     ("主題の「も」", re.compile(r"^(?!それで)[^、。]{0,17}[^、。てでり]も、")),
@@ -134,6 +137,19 @@ def ending_changes(original: str, rewrite: str) -> list[dict[str, Any]]:
     return changes
 
 
+def negation_changes(original: str, rewrite: str) -> list[dict[str, int]]:
+    """Compare negative-expression counts at aligned sentence positions."""
+    before = [len(NEGATION_RE.findall(s)) for s in sentences(original)]
+    after = [len(NEGATION_RE.findall(s)) for s in sentences(rewrite)]
+    changes = []
+    for index in range(max(len(before), len(after))):
+        left = before[index] if index < len(before) else 0
+        right = after[index] if index < len(after) else 0
+        if left != right:
+            changes.append({"index": index + 1, "original": left, "rewrite": right})
+    return changes
+
+
 def logic_points(text: str) -> list[dict[str, str]]:
     points: list[dict[str, str]] = []
     for sentence in sentences(text):
@@ -178,6 +194,7 @@ def diff(original: str, rewrite: str) -> dict[str, Any]:
 
     return {
         "markers": markers,
+        "negation": negation_changes(original, rewrite),
         "new_words": sorted(rewrite_words - original_words),
         "lost_words": sorted(original_words - rewrite_words),
         "structure": structure,
@@ -197,6 +214,11 @@ def render_report(data: dict[str, Any]) -> str:
         lines.append("■ 言い回し・モダリティの増減")
         for item in data["markers"]:
             lines.append(f"- {item['kind']}: {item['original']} → {item['rewrite']}")
+
+    if data["negation"]:
+        lines.append("■ 否定表現の増減（原文との照合候補）")
+        for item in data["negation"]:
+            lines.append(f"- #{item['index']}: {item['original']} → {item['rewrite']}")
 
     if data["new_words"]:
         lines.append("■ 元文にない語: " + "、".join(data["new_words"]))
