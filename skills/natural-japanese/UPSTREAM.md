@@ -21,13 +21,15 @@ Selected semantic-fidelity and rewrite-diff behavior is adapted from [nanaism/yo
 - Upstream license: MIT
 - Original copyright: Copyright (c) 2026 nanaism
 - Adapted normative scope: `references/semantic-fidelity.md`
+- Adapted normative scope (structural rewriting, reviewed at `1bc21f9`): `references/structural-reconstruction.md`
 - Adapted runtime scope: `scripts/fidelity_diff.py`
+- Adapted runtime scope (structural rewriting): `METAPHOR_VERB_PATTERNS` and `detect_metaphor_verbs` in `scripts/lint.py`, taken from upstream `yomiyasu_lint.py` without the over-broad 「〜した瞬間」 pattern
 
 The full yomiyasu MIT notice is preserved in [LICENSE.yomiyasu](./LICENSE.yomiyasu).
 
 The `fidelity_diff.py` implementation is a narrowed adaptation of upstream `yomiyasu_diff.py`: it keeps lexical, modality, sentence-ending, connective, and structural drift signals while intentionally dropping unrelated Markdown emphasis repair and other formatting checks. The behavior remains advisory: it surfaces changes that need review but does not decide whether meaning changed.
 
-The upstream `yomiyasu_lint.py`, corpus/eval infrastructure, domain packs, slop catalog, plugin packaging, and research artifacts are intentionally not vendored. Their responsibilities either overlap with the existing `natural-japanese` lint/references or are outside this runtime surface.
+Apart from the metaphor-verb patterns, the upstream `yomiyasu_lint.py`, corpus/eval infrastructure, domain packs, slop catalog, plugin packaging, and research artifacts are intentionally not vendored. Their responsibilities either overlap with the existing `natural-japanese` lint/references or are outside this runtime surface.
 
 ## writing-skills adaptations
 
