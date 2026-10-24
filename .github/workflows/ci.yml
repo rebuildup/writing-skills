@@ -59,3 +59,34 @@ jobs:
           uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/natural.md --json > /tmp/natural-japanese-natural.json
           uv run skills/natural-japanese/scripts/outline.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-outline.txt
           uv run skills/natural-japanese/scripts/terms.py skills/natural-japanese/scripts/fixtures/natural.md > /tmp/natural-japanese-terms.txt
+          uv run skills/natural-japanese/scripts/lint.py skills/natural-japanese/scripts/fixtures/metaphor-verbs.md --json > /tmp/natural-japanese-metaphor.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          def count(path):
+              data = json.loads(Path(path).read_text())
+              return sum(1 for f in data.get("findings", []) if f.get("category") == "metaphor_verb")
+          assert count("/tmp/natural-japanese-metaphor.json") >= 3, "expected metaphor_verb findings"
+          assert count("/tmp/natural-japanese-natural.json") == 0, "metaphor_verb fired on the natural fixture"
+          PY
+          python skills/natural-japanese/scripts/fidelity_diff.py \
+            skills/natural-japanese/scripts/fixtures/fidelity-original.md \
+            skills/natural-japanese/scripts/fixtures/fidelity-drift.md \
+            --json > /tmp/natural-japanese-fidelity.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("/tmp/natural-japanese-fidelity.json").read_text())
+          assert data["new_words"], "expected added-word candidates"
+          assert data["lost_words"], "expected removed-word candidates"
+          assert data["markers"], "expected modality/marker changes"
+          assert data["structure"], "expected structure changes"
+          assert data["endings"]["changes"], "expected ending-kind changes"
+          import runpy
+          compare = runpy.run_path("skills/natural-japanese/scripts/fidelity_diff.py")["diff"]
+          assert compare("API v1 を維持します。", "API v1 を維持しません。")["negation"]
+          assert compare("API v1 を維持しません。", "API v1 を維持します。")["negation"]
+          assert compare("API v1 を維持します。", "API v1 を維持します。")["negation"] == []
+          assert compare("機能を使わない。", "機能を使う。")["negation"]
+          assert compare("今日は実行せずに終わる。", "今日は実行して終わる。")["negation"]
+          PY

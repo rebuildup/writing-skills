@@ -124,33 +124,9 @@ source間で意見が割れる場合は平均化しない。
 
 ## 4. Extract decision axes
 
-調査結果を百科事典の要約にしない。
+調査結果を知識の羅列にせず、agent の判断が変わる条件へ変換する。候補は reader / task、主張・証拠・確信度、情報順序・密度・読解負荷、用語・参照関係・接続、文体・時点・媒体・言語、scan / read の違いなど。対象に関係する軸だけを残す。
 
-agentが実際に判断できる軸へ変換する。
-
-候補:
-
-- audience knowledge
-- reader task / desired action
-- artifact purpose
-- information hierarchy
-- claim / evidence relationship
-- information density
-- sentence / paragraph cognitive load
-- terminology precision
-- ambiguity / referent resolution
-- cohesion / transition
-- tone / register
-- temporal context
-- source fidelity
-- uncertainty / confidence expression
-- scan vs read behavior
-- localization / translation resilience
-- medium-specific constraints
-
-domainに不要な軸は削る。
-
-`clear`, `natural`, `professional`, `concise`, `engaging` のような抽象語だけで評価しない。observableな特徴へ分解する。
+`clear`, `natural`, `professional`, `concise`, `engaging` といった評価語は、観察できる特徴と適用条件に分解する。
 
 ## 5. Encode the minimum useful Skill
 
@@ -175,7 +151,7 @@ Skillは長い教科書でなくてよい。
 - last-reviewed
 - deterministic checks / evals
 
-文章量やsection数を品質指標にしない。
+文章量やsection数を品質指標にしない。既存 Skill の改修では追記より先に、重複・陳腐化・不要な説明を特定して削除・統合・置換を検討する。新しい規則は既存の最適な位置へ組み込み、必要時だけ読む詳細を reference / eval に分ける。
 
 ## 6. Examples need counterexamples
 
@@ -230,15 +206,7 @@ sourceを要約・変換するSkillでは、文章が自然でも意味が変わ
 
 candidateをfirst-class Skillへpromoteする前に、実際のartifactへ適用する。
 
-例:
-
-- README Skill → 実READMEを新規作成/改稿
-- PR writing → 実PR description
-- error-message → 実際のfailure/recovery state
-- research synthesis → 実source setから短いsynthesis
-- editing → messy draftを編集
-
-trialではSkillがないbaselineと比較できるとよい。
+README、PR文、エラーメッセージ、研究要約など、対象に合う実成果物で試す。可能なら Skill 適用前の baseline と比較する。
 
 記録する:
 
@@ -266,23 +234,18 @@ authoring contextを知っているagentの自己評価だけで終えない。
 
 重大なSkillでは independent review / cold evaluation を検討する。
 
-## 11. Promotion gate
+## 11. Promotion / change gate
 
-candidateをfirst-class Skillとして扱う前に最低限確認する。
+新規 Skill は、問題・適用条件・責務境界を定義し、調査・実成果物での試行・独立した読み直しを終えてから公開する。source fidelity と例外条件も検証する。満たせなければ research Issue のまま残す。
 
-- problem / activation conditionが明確
-- scope boundaryが明確
-- researchをSkill本文より先に実施
-- 複数sourceまたは十分なprimary evidenceを比較
-- generic adviceをconditional decision ruleへ変換
-- disagreement / exceptionを無視していない
-- important failure mode / counterexampleがある
-- real artifactへ適用した
-- final artifact自体をreread / verifyした
-- source-sensitive taskならfidelityも検証した
-- neighboring Skillsとの責務が説明できる
+既存 Skill を改修する場合は、差分を次の観点で確認する。
 
-条件を満たせない場合は無理にSkill化せず、research Issueのまま残す。
+- 追加した規則は新しい判断を可能にするか。既存規則の言い換えではないか
+- 削除・統合した内容に、失われた条件・例外・手順がないか
+- 新旧の文字数・構成を比較し、増加が必要なら理由を示せるか
+- 対象成果物への適用で改善し、過剰修正や意味変更を生まないか
+
+規則を残したまま文章量だけを減らすことも、文字数が減って判断を失うことも、目的ではない。
 
 ## 12. Progressive disclosure
 
