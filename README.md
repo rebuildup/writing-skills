@@ -41,6 +41,10 @@ reader-facing prose 全般に適用する foundation skill です。
 
 [coji/natural-japanese](https://github.com/coji/natural-japanese) を primary upstream とし、[nanaism/yomiyasu](https://github.com/nanaism/yomiyasu) から既存文リライトの意味保持・前後比較を MIT attribution 付きで取り込んでいます。
 
+### source-based-report
+
+配布された授業資料・指定文献に基づくレポートを、式・図・引用・手書きの行数制約に合わせて下書きする specialized skill です。授業資料との表現一致、短い式の本文統合、図の横を活用した紙面構成、筆記中の行数再配分を扱います。
+
 ## Installation
 
 利用可能な Skill を確認:
@@ -60,6 +64,9 @@ npx skills add rebuildup/writing-skills --skill writing-discipline
 
 # 日本語 prose の自然さ・読みやすさ・AI臭診断も使う場合
 bunx skills add rebuildup/writing-skills --skill natural-japanese
+
+# 資料準拠のレポート草案・手書き行数調整
+bunx skills add rebuildup/writing-skills --skill source-based-report
 # or
 npx skills add rebuildup/writing-skills --skill natural-japanese
 ```
@@ -77,11 +84,13 @@ npx skills add rebuildup/writing-skills --skill natural-japanese
 └─ skills/
    ├─ writing-discipline/
    │  └─ SKILL.md
-   └─ natural-japanese/
+   ├─ natural-japanese/
       ├─ SKILL.md
       ├─ references/
       ├─ scripts/
       └─ assets/
+   └─ source-based-report/
+      └─ SKILL.md
 ```
 
 将来の specialized skill は、foundation の原則を置き換えるのではなく progressive disclosure で追加します。候補には clarity、conciseness、information structure、technical writing、documentation、ADR、Issue、Pull Request、review writing などがあります。
