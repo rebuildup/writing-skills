@@ -152,7 +152,7 @@ explicit user/project decisionとして固定されたrelease scope/version/publ
 
 - aude-skills（旧称 project-init）operational Skills の canonical source は current `rebuildup/aude-skills`（移行正本: `rebuildup/aude-skills#212`）。
 - install/update は `bunx skills`。governance baseline `release-0-3-0` は Skill pin ではない。
-- standard bootstrap: `mise run skills-bootstrap`。
+- 再導入は `mise run skills-bootstrap`。採用対象は `mise.toml` に列挙し、候補は `mise run skills-list` で確認する。固定版がある場合は同じ revision の新 URL を使う。旧名の lock は内容差分を確認してから CLI で更新する。
 - continuous update: `mise run skills-update` / `bunx skills update -p -y`。
 - `skills-lock.json` は installed aude-skills（旧称 project-init）Skills の source / path / content hash を記録する。
 - `--global` は repository policy / freshness evidence にしない。
