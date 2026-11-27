@@ -8,7 +8,7 @@
 
 writing-skills の current release-driven development で使用する Operating Model を定義します。
 
-このprofileはproject-initの唯一の正しいorganization topologyではありません。別profileまたはproject-specific modelがConstitutionを満たす場合は置換できます。
+このprofileはaude-skills（旧称 project-init）の唯一の正しいorganization topologyではありません。別profileまたはproject-specific modelがConstitutionを満たす場合は置換できます。
 
 ## Current topology
 
@@ -144,16 +144,16 @@ explicit user/project decisionとして固定されたrelease scope/version/publ
 
 ## Project-specific reconciliation
 
-- `skills/` 配下は writing-skills 自身の published source。project-init bootstrap/updateでここを変更しない。
-- project-init由来 operational Skills は `.agents/skills/` と `.claude/skills/` に導入する。
+- `skills/` 配下は writing-skills 自身の published source。aude-skills（旧称 project-init）bootstrap/updateでここを変更しない。
+- aude-skills（旧称 project-init）由来 operational Skills は `.agents/skills/` と `.claude/skills/` に導入する。
 - persistent prose変更では writing-skills 自身の `skills/writing-discipline/SKILL.md` を canonical writing behavior として保持する。
 
 ## Agent Skills lifecycle
 
-- project-init operational Skills の canonical source は current `rebuildup/project-init`。
+- aude-skills（旧称 project-init）operational Skills の canonical source は current `rebuildup/aude-skills`（移行正本: `rebuildup/aude-skills#212`）。
 - install/update は `bunx skills`。governance baseline `release-0-3-0` は Skill pin ではない。
 - standard bootstrap: `mise run skills-bootstrap`。
 - continuous update: `mise run skills-update` / `bunx skills update -p -y`。
-- `skills-lock.json` は installed project-init Skills の source / path / content hash を記録する。
+- `skills-lock.json` は installed aude-skills（旧称 project-init）Skills の source / path / content hash を記録する。
 - `--global` は repository policy / freshness evidence にしない。
 - repository自身の published `skills/` と project-local imported Skills の source ownershipを混同しない。
