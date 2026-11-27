@@ -16,7 +16,7 @@ AI agent が文章を作成・編集・レビューするときの判断能力�
 
 reader-facing prose 全般に適用する foundation skill です。
 
-`writing-discipline` の正本はこの repository です。[aude-skills](https://github.com/rebuildup/aude-skills)（旧称 `project-init`）を含む他の repository は複製を持たず、ここから導入します。
+`writing-discipline` の配布元と正本はこのリポジトリです。[aude-skills](https://github.com/rebuildup/aude-skills) を含む利用側は、ここから project-local copy を導入します。
 
 主な対象:
 
