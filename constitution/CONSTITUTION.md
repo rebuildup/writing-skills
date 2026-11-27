@@ -110,7 +110,7 @@ non-constitutional ruleは、能力向上・代替mechanism・eval evidenceに�
 
 ## Project identity
 
-本 repository は writing-oriented Agent Skills の canonical source である。project-init 由来の運用Skillは repository 開発を支援する project-local dependency であり、`skills/` 配下の writing-skills 自身の published source ownership を置換しない。
+本 repository は writing-oriented Agent Skills の canonical source である。aude-skills（旧称 project-init）由来の運用Skillは repository 開発を支援する project-local dependency であり、`skills/` 配下の writing-skills 自身の published source ownership を置換しない。
 
 ## Upstream source
 

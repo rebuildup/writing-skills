@@ -46,4 +46,4 @@ Use `.tmp/` for transient investigation / verification output and `.reference/` 
 
 - 最上位 contract: [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md)
 - current Operating Model: [`organization/profiles/release-driven-solo.md`](organization/profiles/release-driven-solo.md)
-- repository自身の `skills/` は published source、imported project-init Skills は project-local development dependency として分離する。
+- repository自身の `skills/` は published source、imported aude-skills（旧称 project-init）Skills は project-local development dependency として分離する。
